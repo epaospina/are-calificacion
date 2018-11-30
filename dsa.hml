@@ -1,0 +1,63 @@
+<html>
+    <body>
+      <div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title panel-title-lender">Institucion Educatica:</h3>
+            <h3 class="panel-title panel-title-lender">Sede:</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th colspan = 3 >Estudiante</th>
+                  <th>Grupo</th>
+                </tr>
+                <tr>
+                  <th colspan = 3 >Dir. Grupo</th>
+                  <th>Fecha</th>
+                </tr>
+                <tr>
+                  <th colspan = 3 >Calificación</th>
+                  <th>Val- Desempeño</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    Ciencias Naturales
+                    <br>
+                    Doncente de asignatura:
+                  </td>
+                  <td>FA: 2</td>
+                  <td>IHS: 4</td>
+                  <td>3.0 - Basico</td>
+                </tr>
+                <tr>
+                  <th colspan = 3>Saber Hacer</th>
+                  <td>2.8 - Bajo</td>
+                </tr>
+                <tr>
+                  <th colspan = 4>+ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</th>
+                </tr>
+                <tr>
+                  <th colspan = 3>Saber Ser</th>
+                  <td>2.8 - Bajo</td>
+                </tr>
+                <tr>
+                  <th colspan = 4>+ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</th>
+                </tr>
+                <tr>
+                  <th colspan = 3>Saber Conocer</th>
+                  <td>2.8 - Bajo</td>
+                </tr>
+                <tr>
+                  <th colspan = 4>+ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  </body>
+</html>
