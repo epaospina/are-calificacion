@@ -834,17 +834,6 @@ class CalificacionesController extends Controller
 
             $idDistribucion = substr($result_array, 0, -1);
 
-            //traer indicadores de desempeño de la distribucion
-            $command = $connection->createCommand("select did.id, id.id as codigo
-												from distribuciones_academicas as da, distribuciones_x_indicador_desempeno as did, paralelos as p, indicador_desempeno as id
-												where da.id_perfiles_x_personas_docentes = $idDocente
-												and da.id_paralelo_sede = p.id
-												and p.id = $idParalelo
-												and did.id_distribuciones = da.id
-												and id_distribuciones in($idDistribucion)
-												and id_indicador_desempeno = id.id");
-            $result = $command->queryAll();
-
             $calificaciones = $connection->createCommand("SELECT 
                   personas.nombres || ' ' || personas.apellidos AS nombre,
                   avg(\"public\".calificaciones.calificacion) AS calificacion,
@@ -862,7 +851,45 @@ class CalificacionesController extends Controller
                   JOIN observaciones_calificaciones ON (((observaciones_calificaciones.id_asignatura = asignaturas.id) AND (observaciones_calificaciones.id_estudiante = estudiantes.id_perfiles_x_personas))))
                   WHERE estudiantes.id_perfiles_x_personas = $estudiante_id
                   GROUP BY materia, nombre, \"public\".calificaciones.id_periodo
-                 ORDER BY id_periodo");
+                 ORDER BY materia");
+
+            $observacion = $connection->createCommand("SELECT
+                (((personas.nombres)::text || ' '::text) || (personas.apellidos)::text) AS nombre,
+                Avg(\"public\".calificaciones.calificacion) AS calificacion,
+                \"public\".calificaciones.id_periodo,
+                \"public\".asignaturas.descripcion AS materia,
+                \"public\".observaciones_calificaciones.observacion_saber,
+                \"public\".observaciones_calificaciones.observacion_hacer,
+                \"public\".observaciones_calificaciones.observacion_conocer,
+                \"public\".observaciones_calificaciones.id_asignatura,
+                \"public\".indicador_desempeno.descripcion
+                FROM
+                ((((((((\"public\".calificaciones
+                JOIN \"public\".estudiantes ON ((\"public\".calificaciones.id_perfiles_x_personas_estudiantes = \"public\".estudiantes.id_perfiles_x_personas)))
+                JOIN \"public\".perfiles_x_personas ON ((\"public\".estudiantes.id_perfiles_x_personas = \"public\".perfiles_x_personas.\"id\")))
+                JOIN \"public\".personas ON ((\"public\".perfiles_x_personas.id_personas = \"public\".personas.\"id\")))
+                JOIN \"public\".distribuciones_x_indicador_desempeno ON ((\"public\".calificaciones.id_distribuciones_x_indicador_desempeno = \"public\".distribuciones_x_indicador_desempeno.\"id\")))
+                JOIN \"public\".indicador_desempeno ON ((\"public\".distribuciones_x_indicador_desempeno.id_indicador_desempeno = \"public\".indicador_desempeno.\"id\")))
+                JOIN \"public\".distribuciones_academicas ON ((\"public\".distribuciones_x_indicador_desempeno.id_distribuciones = \"public\".distribuciones_academicas.\"id\")))
+                JOIN \"public\".asignaturas_x_niveles_sedes ON ((\"public\".distribuciones_academicas.id_asignaturas_x_niveles_sedes = \"public\".asignaturas_x_niveles_sedes.\"id\")))
+                JOIN \"public\".asignaturas ON ((\"public\".asignaturas_x_niveles_sedes.id_asignaturas = \"public\".asignaturas.\"id\")))
+                INNER JOIN \"public\".observaciones_calificaciones ON \"public\".observaciones_calificaciones.id_asignatura = \"public\".asignaturas.\"id\" AND \"public\".observaciones_calificaciones.id_estudiante = \"public\".estudiantes.id_perfiles_x_personas
+                GROUP BY
+                \"public\".asignaturas.descripcion,
+                (((personas.nombres)::text || ' '::text) || (personas.apellidos)::text),
+                \"public\".calificaciones.id_periodo,
+                \"public\".observaciones_calificaciones.observacion_saber,
+                \"public\".observaciones_calificaciones.observacion_hacer,
+                \"public\".observaciones_calificaciones.observacion_conocer,
+                \"public\".observaciones_calificaciones.id_asignatura,
+                indicador_desempeno.descripcion
+                ORDER BY
+                \"public\".calificaciones.id_periodo ASC");
+
+            $calificacion_periodos = [];
+            foreach ($calificaciones->queryAll() as $key => $calificacion){
+                $calificacion_periodos[$calificacion["materia"]][$calificacion['id_periodo']]["calificacion"] = $calificacion["calificacion"];
+            }
 
             /*$calificaciones = Calificaciones::find()->alias('os')
                 ->select([
@@ -885,7 +912,6 @@ class CalificacionesController extends Controller
                 ->innerJoin('observaciones_calificaciones', 'observaciones_calificaciones.id_estudiante = estudiantes.id_perfiles_x_personas')
                 ->where(['estudiantes.id' => $estudiante[0]["id"]])->all();*/
 
-
             Yii::$app->get('db')->createCommand("COPY (".$calificaciones->getRawSql().") TO 'C:/xampp/htdocs/are/web/prueba.csv' DELIMITER';' NULL '';")->queryAll();
 
             $materiasEstObserv = ObservacionesCalificaciones::find()->where('id_estudiante=:estudiante', [':estudiante'=>$estudiante[0]["id"]])->all();
@@ -896,7 +922,7 @@ class CalificacionesController extends Controller
                 'estudiante' => $estudiante[0]["nombres"],
                 'paralelo' => $paralelo->descripcion,
                 'asignaturas' => $materiasEstObserv,
-                'calificaciones' => $calificaciones->queryAll()
+                'materia_calificacion' => $calificacion_periodos
             ]);
 
 

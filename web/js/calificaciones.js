@@ -830,6 +830,8 @@ function generatePdf() {
     console.log(data);
 
     $.post( "index.php?r=calificaciones/generate-pdf", data, function( data ) {
+        window.open('prueba.pdf', 'Download');
+        //window.location.assign('prueba.pdf');
         $( ".result" ).html( data );
     });
 }
